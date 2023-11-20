@@ -684,17 +684,17 @@ double FixHMC::compute_vector(int item)
     return DeltaKE;
   else if (n == 4)
     return DeltaPE + DeltaKE;
-  else if (n == 5) {
-    double *dx, local_msd = 0.0;
-    int nlocal = atom->nlocal;
-    for (int i = 0; i < nlocal; i++) {
-      dx = deltax[i];
-      local_msd += dx[0]*dx[0] + dx[1]*dx[1] + dx[2]*dx[2];
-    }
-    double msd;
-    MPI_Allreduce(&local_msd,&msd,1,MPI_DOUBLE,MPI_SUM,world);
-    msd /= atom->natoms;
-    return msd;
+  // else if (n == 5) {
+  //   double *dx, local_msd = 0.0;
+  //   int nlocal = atom->nlocal;
+  //   for (int i = 0; i < nlocal; i++) {
+  //     dx = deltax[i];
+  //     local_msd += dx[0]*dx[0] + dx[1]*dx[1] + dx[2]*dx[2];
+  //   }
+  //   double msd;
+  //   MPI_Allreduce(&local_msd,&msd,1,MPI_DOUBLE,MPI_SUM,world);
+  //   msd /= atom->natoms;
+  //   return msd;
   }
   else
     return 0.0;
@@ -868,6 +868,9 @@ void FixHMC::random_velocities()
       v[i][0] = stdev*random->gaussian();
       v[i][1] = stdev*random->gaussian();
       v[i][2] = stdev*random->gaussian();
+  
+// add a velocity rescaling algorithm here to ensure that the velocity of the center of mass of the system is zero. 
+//This prevents the potential flying icecube problem.
     }
 }
 
